@@ -1,0 +1,59 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+-- empty entity because this is just a test script
+entity test_PC is
+end entity test_PC;		
+
+architecture behavior of test_PC is		
+	signal counter : std_logic_vector(15 downto 0);
+	signal load : std_logic;
+	signal reset : std_logic;
+	signal increment : std_logic;
+	signal clk : std_logic;
+	signal output : std_logic_vector(15 downto 0);
+			
+begin
+	-- map logic variables to inputs and outputs of chip being tested
+	UUT : entity work.PC port map (
+		in_counter => counter,
+		in_load => load,
+		in_reset => reset,
+		in_increment => increment,
+		in_clk => clk,
+		out_counter => output
+	);
+	
+	-- the test script
+	tb1 : process
+	begin		
+		
+		counter <= "0000000000000000";				
+		clk <= '0';
+		load <= '1';
+		increment <= '0';
+		reset <= '1';
+		
+		wait for 10 ns;		
+		clk <= '1';		
+		wait for 10 ns;
+		clk <= '0';
+		
+		assert output = "0000000000000000"	report "unable to rest";
+
+		
+		reset <= '0';
+		increment <= '1';
+		load <= '0';
+		
+		wait for 10 ns;	
+		clk <= '1';		
+		
+		wait for 10 ns;
+		clk <= '0';	
+		
+		assert output = "0000000000000001"	report "unable to increment";
+				
+	end process;
+	
+end architecture behavior;
